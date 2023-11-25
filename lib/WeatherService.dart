@@ -46,25 +46,32 @@ class WeatherService {
       forceAndroidLocationManager: true,
     );
 
-    print(position.toString());
+    print(position.toString() + " Im Here");
 
     //convert the location into a list of placemark objects
     List<Placemark> placemark = await placemarkFromCoordinates(
         position.latitude, position.longitude,
         localeIdentifier: 'en');
 
+    print(placemark.toString() + " Placemark String");
+
+
     //extract the city name from the first placemark
 
-    String city = "";
+      String city = "";
 
-    if (placemark[1].subLocality.toString() == "") {
-      city = placemark[1].locality.toString();
-    } else {
-      city = placemark[1].subLocality.toString();
+      if (placemark[1].subLocality.toString() == "") {
+        city = placemark[1].locality.toString();
+      } else {
+        city = placemark[1].subLocality.toString();
+      }
+
+      print(placemark.toString());
+
+      return placemark[1].locality.toString() ?? "as";
     }
 
-    print(placemark.toString());
 
-    return placemark[1].locality.toString() ?? "as";
-  }
+    // return "Kathmandu";
+  // }
 }
