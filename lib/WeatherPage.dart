@@ -93,7 +93,6 @@ class _WeatherPageState extends State<WeatherPage> {
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 20, right: 20),
-                        padding: EdgeInsets.only(left: 20, right: 20),
                         height: 280,
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
@@ -105,6 +104,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Container(
+                              padding: EdgeInsets.only(left: 20, right: 20),
                               width: MediaQuery.of(context).size.width,
                               alignment: Alignment.centerLeft,
                               child: const Text(
@@ -116,118 +116,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                 height: 200,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          "9:00 AM",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Lottie.asset(
-                                            getDisplayAnimation(
-                                                _weather.mainCondition),
-                                            width: 100,
-                                            height: 100),
-                                        Text(
-                                          "45°",
-                                          style: TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                      ],
-                                    ),
-                                    10.squareBox,
-                                    VerticalDivider(
-                                      width: 10,
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          "9:00 AM",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Lottie.asset(
-                                            getDisplayAnimation(
-                                                _weather.mainCondition),
-                                            width: 100,
-                                            height: 100),
-                                        Text(
-                                          "45°",
-                                          style: TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                      ],
-                                    ),
-                                    10.squareBox,
-                                    VerticalDivider(
-                                      width: 10,
-                                    ),Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          "9:00 AM",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Lottie.asset(
-                                            getDisplayAnimation(
-                                                _weather.mainCondition),
-                                            width: 100,
-                                            height: 100),
-                                        Text(
-                                          "45°",
-                                          style: TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                      ],
-                                    ),10.squareBox,VerticalDivider(width: 10,),Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          "9:00 AM",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Lottie.asset(
-                                            getDisplayAnimation(
-                                                _weather.mainCondition),
-                                            width: 100,
-                                            height: 100),
-                                        Text(
-                                          "45°",
-                                          style: TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                      ],
-                                    ),10.squareBox,VerticalDivider(width: 10,),Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          "9:00 AM",
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                        Lottie.asset(
-                                            getDisplayAnimation(
-                                                _weather.mainCondition),
-                                            width: 100,
-                                            height: 100),
-                                        Text(
-                                          "45°",
-                                          style: TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w400),
-                                        ),
-                                      ],
-                                    ),5.squareBox,VerticalDivider(width: 10,),
-                                  ],
+                                  children: [getForecast(),VerticalDivider(),getForecast(),VerticalDivider(),getForecast(),VerticalDivider(),getForecast(),VerticalDivider(),getForecast(),VerticalDivider(),getForecast()],
                                 )),
                             // Container( //used to prevent this from expanding into the parent ocntainer
                             //   child:
@@ -239,6 +128,27 @@ class _WeatherPageState extends State<WeatherPage> {
                   ),
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget getForecast() {
+    return Container(
+      padding: EdgeInsets.all(7),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text(
+            "9:00 AM",
+            style: TextStyle(fontSize: 18),
+          ),
+          Lottie.asset(getDisplayAnimation(_weather.mainCondition),
+              width: 100, height: 100),
+          Text(
+            "45°",
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w400),
+          ),
+        ],
       ),
     );
   }
