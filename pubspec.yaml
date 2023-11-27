@@ -43,6 +43,8 @@ dependencies:
   velocity_x: ^4.1.1
   lottie: ^2.6.0
   intl: ^0.18.1
+  sqflite: ^2.3.0
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'WeatherPage.dart';
+import 'pages/WeatherPage.dart';
 
 void main() {
   runApp(MyApp());

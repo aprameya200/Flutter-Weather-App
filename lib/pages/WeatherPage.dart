@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:new_app/WeatherModel.dart';
-import 'package:new_app/WeatherService.dart';
+import 'package:new_app/model/ForecastModel.dart';
+import 'package:new_app/model/WeatherModel.dart';
+import 'package:new_app/services/ForecastService.dart';
+import 'package:new_app/services/WeatherService.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class WeatherPage extends StatefulWidget {
@@ -16,7 +18,9 @@ class _WeatherPageState extends State<WeatherPage> {
 
   // api key
   final weatherService = WeatherService("1c6a79075cdea7f0378df4d969daed50");
+  final forecastService = ForecastService();
   late Weather _weather;
+  late List _forecast;
   late String cityName;
 
   _fetchWeather() async {
@@ -25,9 +29,11 @@ class _WeatherPageState extends State<WeatherPage> {
     //get weather for city
 
     final weather = await weatherService.getWeather(cityname);
+    final forecast = await forecastService.getForecast(cityname);
 
     setState(() {
       _weather = weather;
+      _forecast = forecast;
       isDataFetched = true;
       cityName = cityname;
     });
@@ -162,6 +168,9 @@ class _WeatherPageState extends State<WeatherPage> {
       firstLetter = split[i][0].toUpperCase();
       word = word + " " + firstLetter + split[i].substring(1);
     }
+
+    print(_forecast.length.toString() + " is the length"); //forecast list
+
     return word;
   }
 
