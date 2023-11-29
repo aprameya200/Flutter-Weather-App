@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:new_app/rough/MyHomePage.dart';
+import 'package:new_app/rough/SliversPage.dart';
 
 import 'pages/WeatherPage.dart';
 

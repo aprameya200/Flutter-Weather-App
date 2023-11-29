@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:new_app/model/WeatherModel.dart';
 import 'package:sqflite/sqflite.dart';
 
 class Forecast {
   late final String cityName;
-  late final double temperature;
+  late final num temperature;
   late final String mainCondition;
   late String time;
 
