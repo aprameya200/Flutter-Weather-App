@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 class DisplayHelper{
 
   static String getDisplayAnimation(String desc) {
@@ -39,7 +42,10 @@ class DisplayHelper{
       firstLetter = split[i][0].toUpperCase();
       word = word + " " + firstLetter + split[i].substring(1);
     }
-
     return word;
+  }
+
+  static Widget addLocationButton(){
+    return Row(children: [Icon(Icons.add),Text("Add Location")],);
   }
 }

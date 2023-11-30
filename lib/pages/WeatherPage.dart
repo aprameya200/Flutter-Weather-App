@@ -36,6 +36,9 @@ class _WeatherPageState extends State<WeatherPage> {
     //get weather for city
 
     final weather = await weatherService.getWeather(cityname);
+
+    weatherService.getWeatherDB();
+
     final forecast = await forecastService.getForecast(cityname);
 
     setState(() {
@@ -62,19 +65,22 @@ class _WeatherPageState extends State<WeatherPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: initDrawer(),
       body: !isDataFetched
           ? const Center(
               child:
                   CircularProgressIndicator(), //until weather obj is initialized
             )
           : Container(
-              // color: Colors.white,
+              padding: EdgeInsets.only(top: 50),
+              color: Colors.transparent,
               child: Center(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Container(
                       height: screenHeight * 1.75,
-                      padding: EdgeInsets.only(top: 60, bottom: 10),
+                      // color: Colors.red,
+                      padding: EdgeInsets.only(bottom: 10),
                       child: initWidget(context)),
                 ),
               ),
@@ -82,9 +88,81 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 
-  Widget initWidget(BuildContext context) {
+  Drawer initDrawer() {
+    return Drawer(
+      elevation: 0,
+      shape: null,
+      backgroundColor: Color(0xFFFFFFFF),
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SearchBar(
+              hintText: "Search",
+              shape: MaterialStatePropertyAll(ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)))),
+              overlayColor: MaterialStatePropertyAll(Colors.yellow),
+              backgroundColor:
+                  MaterialStatePropertyAll(Color.fromARGB(12, 12, 12, 12)),
+              leading: Icon(Icons.search),
+              elevation: MaterialStatePropertyAll(0),
+            ),
+            SquareBox(20),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Container(child: Lottie.asset("assets/mountains.json",height: 100),),
+                      Text(
+                        "Kathmandu",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Text(
+                        "Cloudy",
+                        style: TextStyle(fontSize: 15),
+                      )
+                    ],
+                  ),
+                  Container(
+                    height: 50,
+                    alignment: Alignment.topRight,
+                    child: Text(
+                      "19°",
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
+  Widget initWidget(BuildContext context) {
     List<Widget> displayWidgets = [
+      Container(
+        alignment: Alignment.centerLeft,
+        child: Builder(
+            builder: (context) => TextButton(
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: const Icon(
+                  Icons.menu,
+                  size: 40,
+                  color: Colors.black,
+                ))),
+      ),
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -105,18 +183,20 @@ class _WeatherPageState extends State<WeatherPage> {
                 fontWeight: FontWeight.w300),
           ),
         ],
-      ),
+      ), //Location and condition
       Container(
+          //image
           child: Lottie.asset(
               DisplayHelper.getDisplayAnimation(_weather.mainCondition))),
       Text(
+        //Temperature
         " ${_weather.temperature.round()}°",
         style: const TextStyle(
             fontSize: 50,
             color: Colors.black,
             fontWeight: FontWeight.w500,
             letterSpacing: 3),
-      )
+      ),
     ];
 
     List<Widget> mainbodyWidgets = [
@@ -124,9 +204,10 @@ class _WeatherPageState extends State<WeatherPage> {
         height: screenHeight * 0.58,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: displayWidgets, //adding the above part in the screen then dding the forecast in this list
+          children: displayWidgets, //adding location, image and temp
         ),
       ),
+      SquareBox(10),
     ];
 
     //adding the forecast in this list
@@ -153,7 +234,7 @@ class _WeatherPageState extends State<WeatherPage> {
   Widget addWidgets(BuildContext context, String date) {
     double screenWidth = MediaQuery.of(context).size.width;
     double containerHeight = MediaQuery.of(context).size.height * 0.33;
-    double fontSize = screenWidth * 0.05;
+    double fontSize = screenWidth * 0.037;
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
@@ -193,11 +274,11 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 
-
   List<Widget> getForecast(String date) {
     return _forecast
         .where((forecast) => //single element in the forecast list
-            Converters.dateFormatter(forecast.time) == Converters.dateFormatter(date))
+            Converters.dateFormatter(forecast.time) ==
+            Converters.dateFormatter(date))
         .map((forecast) => Container(
               //maps each elemt of the forecast list as a Container
               padding: const EdgeInsets.all(7),
@@ -225,9 +306,13 @@ class _WeatherPageState extends State<WeatherPage> {
                 ],
               ),
             ))
-        .expand((widget) => [widget, const VerticalDivider()]) //adds new widget after each element widget
+        .expand((widget) => [
+              widget,
+              const VerticalDivider()
+            ]) //adds new widget after each element widget
         .toList() //convert to list
       ..removeLast(); // Remove the last VerticalDivider(.. means additional operation)
   }
 
+  addLocation() {}
 }

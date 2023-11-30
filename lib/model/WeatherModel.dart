@@ -11,5 +11,17 @@ class Weather {
         json['weather'][0]['description']);
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'cityName': cityName,
+      'temperature': temperature,
+      'mainCondition': mainCondition,
+    };
+  }
+
+  static Weather fromMap(Map<String, dynamic> map){
+    return Weather(map['cityName'],map['temperature'],map['mainCondition']);
+  }
+
 
 }
