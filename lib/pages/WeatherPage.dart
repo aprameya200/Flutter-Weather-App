@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:new_app/helpers/DisplayHelper.dart';
+import 'package:new_app/helpers/ShowDrawer.dart';
 import 'package:new_app/model/ForecastModel.dart';
+import 'package:new_app/model/SavedLocation.dart';
 import 'package:new_app/model/WeatherModel.dart';
 import 'package:new_app/services/ForecastService.dart';
 import 'package:new_app/services/WeatherService.dart';
@@ -65,7 +68,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: initDrawer(),
+      drawer: ShowDrawer.initDrawer(),
       body: !isDataFetched
           ? const Center(
               child:
@@ -88,65 +91,7 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 
-  Drawer initDrawer() {
-    return Drawer(
-      elevation: 0,
-      shape: null,
-      backgroundColor: Color(0xFFFFFFFF),
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SearchBar(
-              hintText: "Search",
-              shape: MaterialStatePropertyAll(ContinuousRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)))),
-              overlayColor: MaterialStatePropertyAll(Colors.yellow),
-              backgroundColor:
-                  MaterialStatePropertyAll(Color.fromARGB(12, 12, 12, 12)),
-              leading: Icon(Icons.search),
-              elevation: MaterialStatePropertyAll(0),
-            ),
-            SquareBox(20),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Container(child: Lottie.asset("assets/mountains.json",height: 100),),
-                      Text(
-                        "Kathmandu",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Text(
-                        "Cloudy",
-                        style: TextStyle(fontSize: 15),
-                      )
-                    ],
-                  ),
-                  Container(
-                    height: 50,
-                    alignment: Alignment.topRight,
-                    child: Text(
-                      "19°",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget initWidget(BuildContext context) {
     List<Widget> displayWidgets = [

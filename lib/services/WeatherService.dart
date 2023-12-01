@@ -18,6 +18,7 @@ class WeatherService {
   WeatherService(this.apiKey);
 
   Future<Weather> getWeather(String cityName) async {
+
     try {
       final response = await http.get(Uri.parse(
           'https://api.openweathermap.org/data/2.5/weather?q=$cityName&units=metric&appid=95489aa1b1958a07261d681b6c8206de'));
