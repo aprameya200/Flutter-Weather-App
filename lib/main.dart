@@ -20,9 +20,11 @@ class MyApp extends StatelessWidget {
       statusBarIconBrightness: Brightness.dark, // Light or dark icons
     ));
 
+    WeatherPage weatherPage = WeatherPage(cityName: '');
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WeatherPage(),
+      home: weatherPage,
       theme: ThemeData(fontFamily: 'Montserrat'),
     );
   }

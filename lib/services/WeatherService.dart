@@ -24,8 +24,8 @@ class WeatherService {
           'https://api.openweathermap.org/data/2.5/weather?q=$cityName&units=metric&appid=95489aa1b1958a07261d681b6c8206de'));
 
       if (response.statusCode == 200) {
-        saveToDatabase(Weather.fromJSON(
-            jsonDecode(response.body))); //saving the api data to database
+        // saveToDatabase(Weather.fromJSON(
+        //     jsonDecode(response.body))); //saving the api data to database
 
         return Weather.fromJSON(
             jsonDecode(response.body)); //constructor that creates and object

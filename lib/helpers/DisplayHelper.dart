@@ -17,6 +17,7 @@ class DisplayHelper{
       case "scattered clouds":
         return "assets/sun_and_clouds.json";
       case "light rain":
+      case "light intensity shower rain":
         return "assets/sun_and_rain.json";
       case "moderate rain":
         return "assets/sun_and_rain.json";
