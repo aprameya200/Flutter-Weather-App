@@ -47,6 +47,9 @@ dependencies:
   path: ^1.8.3
   sliver_tools: ^0.2.12
   flutter_typeahead: ^5.0.1
+  carbon_icons: ^0.0.1+2
+  riverpod: ^2.4.9
+  flutter_riverpod: ^2.4.9
 
 dev_dependencies:
   flutter_test:

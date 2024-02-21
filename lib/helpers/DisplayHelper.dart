@@ -28,6 +28,8 @@ class DisplayHelper{
       case "mist":
       case "fog":
         return "assets/fog.json";
+      default:
+        return "assets/sun.json";
     }
 
     // return "assets/sun.json";

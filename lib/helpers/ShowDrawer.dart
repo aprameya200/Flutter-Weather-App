@@ -154,7 +154,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:new_app/pages/WeatherPage.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 import '../model/SavedLocation.dart';
 
@@ -258,7 +257,7 @@ class ShowDrawer {
                 );
               },
             ),
-            SquareBox(20),
+            SizedBox(height: 20,),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Row(
