@@ -10,8 +10,12 @@ import 'package:http/http.dart'
 import 'package:permission_handler/permission_handler.dart';
 import 'package:geolocator/geolocator.dart';
 
+const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+const API_KEY_1 = "95489aa1b1958a07261d681b6c8206de";
+const API_KEY_2 = "1c6a79075cdea7f0378df4d969daed50";
+
+
 class WeatherService {
-  static const BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
   late final String apiKey;
   final dbHelper = WeatherDatabase();
 
@@ -19,9 +23,12 @@ class WeatherService {
 
   Future<Weather> getWeather(String cityName) async {
 
-    try {
+    // try {
       final response = await http.get(Uri.parse(
-          'https://api.openweathermap.org/data/2.5/weather?q=$cityName&units=metric&appid=95489aa1b1958a07261d681b6c8206de'));
+          '$BASE_URL?q=$cityName&units=metric&appid=$API_KEY_1'));
+      print(cityName);
+      print(response.statusCode);
+      print(response.body);
 
       if (response.statusCode == 200) {
         // saveToDatabase(Weather.fromJSON(
@@ -29,12 +36,22 @@ class WeatherService {
 
         return Weather.fromJSON(
             jsonDecode(response.body)); //constructor that creates and object
-      } else {
-        throw Exception("Failed to load weather data");
       }
-    } catch (Exception) {
-      throw ("Unable to connect to API");
-    }
+      else {
+        final response = await http.get(Uri.parse(
+            '$BASE_URL?q=$cityName&units=metric&appid=$API_KEY_2'));
+
+        if (response.statusCode == 200) {
+          // saveToDatabase(Weather.fromJSON(
+          //     jsonDecode(response.body))); //saving the api data to database
+
+          return Weather.fromJSON(
+              jsonDecode(response.body));
+        }else{
+          throw Exception("Failed to load weather data");
+        }
+      }
+    // }
   }
 
 
@@ -79,6 +96,8 @@ class WeatherService {
     } else {
       city = placemark[1].subLocality.toString();
     }
+
+    // print(placemark[1].toString());
 
     return placemark[1].locality.toString() ?? "as";
   }

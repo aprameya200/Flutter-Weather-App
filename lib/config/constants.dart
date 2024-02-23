@@ -13,8 +13,14 @@ void setSystemChrome(){
   ));
 }
 
-class ColorConstants{
+const String FONT_SMALL = "small";
+const String FONT_MEDIUM = "medium";
+const String FONT_TEMPERATURE_LARGE = "temperature_large";
+const String FONT_FORECAST_DATE = "forecast_date";
+const String FONT_FORECAST_TIME = "forecast_time";
+const String FONT_FORECAST_TEMPERATURE = "forecast_temperature";
 
+class ColorConstants{
   static const Color cardbg = Color(0xffF5F7F8);
 }
 

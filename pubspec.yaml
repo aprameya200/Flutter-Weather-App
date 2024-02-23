@@ -50,6 +50,11 @@ dependencies:
   carbon_icons: ^0.0.1+2
   riverpod: ^2.4.9
   flutter_riverpod: ^2.4.9
+  loading_animation_widget: ^1.2.0+4
+  skeleton_animation: ^0.1.4
+  hexcolor: ^3.0.1
+  auto_size_text: ^3.0.0
+  toastification: ^1.2.1
 
 dev_dependencies:
   flutter_test:

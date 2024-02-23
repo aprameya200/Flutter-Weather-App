@@ -158,15 +158,16 @@ import 'package:new_app/pages/WeatherPage.dart';
 import '../model/SavedLocation.dart';
 
 class ShowDrawer {
-   Drawer initDrawer(BuildContext context, Function fetchWeatherForCity) { //passing function from Weather page to take new cityname as a input and call api accordingly to make state changes.
+  Drawer initDrawer(BuildContext context, Function fetchWeatherForCity) {
+    //passing function from Weather page to take new cityname as a input and call api accordingly to make state changes.
     TextEditingController controller = TextEditingController();
 
     return Drawer(
       elevation: 0,
-      shape: null,
+      shape: Border.all(width: 0), // No border radius, only rectangular shape
       backgroundColor: Color(0xFFFFFFFF),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20),
+        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,6 +189,7 @@ class ShowDrawer {
                 }
               },
               onSelected: (String selection) {
+                FocusManager.instance.primaryFocus?.unfocus();
                 fetchWeatherForCity(selection);
                 Navigator.pop(context, true);
               },
@@ -220,7 +222,7 @@ class ShowDrawer {
                   child: Container(
                     height: 200,
                     child: Material(
-                      //adjust height and width
+                        //adjust height and width
                         color: Colors.transparent,
                         child: SizedBox(
                             height: 300,
@@ -228,36 +230,38 @@ class ShowDrawer {
                               height: 200,
                               child: SingleChildScrollView(
                                   child: Container(
-                                    color: Colors.transparent,
-                                    width: 0,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: options.map((opt) {
-                                        return InkWell(
-                                            onTap: () {
-                                              onSelected(opt);
-                                            },
-                                            child: Container(
-                                              padding:
+                                color: Colors.transparent,
+                                width: 0,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: options.map((opt) {
+                                    return InkWell(
+                                        onTap: () {
+                                          onSelected(opt);
+                                        },
+                                        child: Container(
+                                          padding:
                                               EdgeInsets.symmetric(vertical: 6),
-                                              color: Colors.white,
-                                              alignment: Alignment.topLeft,
-                                              width: 270,
-                                              child: Text(
-                                                opt,
-                                                textAlign: TextAlign.left,
-                                                style: TextStyle(fontSize: 18),
-                                              ),
-                                            ));
-                                      }).toList(),
-                                    ),
-                                  )),
+                                          color: Colors.white,
+                                          alignment: Alignment.topLeft,
+                                          width: 270,
+                                          child: Text(
+                                            opt,
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                        ));
+                                  }).toList(),
+                                ),
+                              )),
                             ))),
                   ),
                 );
               },
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Row(
@@ -284,7 +288,7 @@ class ShowDrawer {
                     child: const Text(
                       "19°",
                       style:
-                      TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
                     ),
                   )
                 ],
@@ -296,4 +300,3 @@ class ShowDrawer {
     );
   }
 }
-

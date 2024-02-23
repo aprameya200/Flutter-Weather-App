@@ -9,10 +9,11 @@ class Forecast {
   late final num temperature;
   late final String mainCondition;
   late String time;
+  late int dateTime;
 
 
   Forecast(this.cityName, this.temperature, this.mainCondition,
-      this.time); //constyructor
+      this.time,this.dateTime); //constyructor
 
 
   static List getForecastList(Map<String, dynamic> json){
@@ -32,8 +33,12 @@ class Forecast {
           json["city"]['name'],
           json["list"][i]["main"]["temp"],
           json["list"][i]["weather"][0]["description"],
-          json["list"][i]["dt_txt"]));
+          json["list"][i]["dt_txt"],
+          json["list"][i]["dt"])
+      );
     }
+
+
 
     return forecastList;
   }
@@ -44,11 +49,12 @@ class Forecast {
       'temperature': temperature,
       'mainCondition': mainCondition,
       'time': time,
+      'dt' : dateTime
     };
   }
 
   static Forecast fromMap(Map<String, dynamic> map){
-    return Forecast(map['cityName'],map['temperature'],map['mainCondition'],map['time']);
+    return Forecast(map['cityName'],map['temperature'],map['mainCondition'],map['time'],map['dateTime']);
   }
 
 
