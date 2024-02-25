@@ -16,12 +16,14 @@ import 'package:new_app/model/SavedLocation.dart';
 import 'package:new_app/model/WeatherModel.dart';
 import 'package:new_app/services/ForecastService.dart';
 import 'package:new_app/services/WeatherService.dart';
+import 'package:new_app/services/shared_preferences.dart';
 import 'package:skeleton_animation/skeleton_animation.dart';
 import 'package:toastification/toastification.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../helpers/Converters.dart';
 import '../rough/MyHomePage.dart';
+import '../widgets/toast_notification.dart';
 
 class WeatherPage extends StatefulWidget {
   const WeatherPage({super.key});
@@ -144,42 +146,11 @@ class _WeatherPageState extends State<WeatherPage> with SingleTickerProviderStat
                         Spacer(flex: 2,),
                         Builder(
                             builder: (context) => GestureDetector(
-                                onTap: () {
-                                  toastification.show(
-                                    context: context,
-                                    type: ToastificationType.success,
-                                    style: ToastificationStyle.fillColored,
-                                    title: const Text(" Added Succesfully."),
-                                    description: AutoSizeText(" ${_weather.cityName} added to favourites.",maxLines: 1,),
-                                    alignment: Alignment.topLeft,
-                                    autoCloseDuration: const Duration(
-                                      seconds: 2,
-                                      milliseconds: 500,
-                                    ),
-                                    animationBuilder: (
-                                        context,
-                                        animation,
-                                        alignment,
-                                        child,
-                                        ) {
-                                      return FadeTransition(
-                                        opacity: animation,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                          child: child,
-                                        ),
-                                      );
-                                    },
-                                    primaryColor: Color(0xffffffff),
-                                    backgroundColor: Color(0xff000000),
-                                    foregroundColor: Color(0xff000000),
-                                    icon: Icon(CarbonIcons.temperature_feels_like),
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    boxShadow: highModeShadow,
-                                    closeButtonShowType: CloseButtonShowType.onHover,
-                                    dragToClose: true,
-                                    // applyBlurEffect: true
-                                  );
+                                onTap: () async {
+                                  bool saveLocation = await SharedPreferencesManager.addToFavouritesList(_weather.cityName);
+
+                                  //show this if scuccess
+                                  ToastNotification().showToast(context,_weather.cityName);
                                   _rotateIcon();
 
                                 },

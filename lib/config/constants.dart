@@ -25,3 +25,8 @@ class ColorConstants{
 }
 
 
+const String CURRENT_LOCATION = "current_location";
+const String FAVOURITES_LIST = "favourites_list";
+
+
+
