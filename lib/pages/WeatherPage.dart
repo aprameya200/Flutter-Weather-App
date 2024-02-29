@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
 import 'package:new_app/config/constants.dart';
+import 'package:new_app/database/WeatherDatabase.dart';
 import 'package:new_app/helpers/DisplayHelper.dart';
 import 'package:new_app/helpers/ShowDrawer.dart';
 import 'package:new_app/model/ForecastModel.dart';
@@ -17,6 +18,7 @@ import 'package:new_app/model/WeatherModel.dart';
 import 'package:new_app/services/ForecastService.dart';
 import 'package:new_app/services/WeatherService.dart';
 import 'package:new_app/services/shared_preferences.dart';
+import 'package:new_app/widgets/initial_widget.dart';
 import 'package:skeleton_animation/skeleton_animation.dart';
 import 'package:toastification/toastification.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -32,9 +34,11 @@ class WeatherPage extends StatefulWidget {
   State<WeatherPage> createState() => _WeatherPageState();
 }
 
-class _WeatherPageState extends State<WeatherPage> with SingleTickerProviderStateMixin{
+class _WeatherPageState extends State<WeatherPage>
+    with SingleTickerProviderStateMixin {
   bool isDataFetched = false;
   bool isCurrentLocation = true;
+  bool containsLocation = false;
 
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -49,17 +53,53 @@ class _WeatherPageState extends State<WeatherPage> with SingleTickerProviderStat
   double screenHeight = 0.0;
   double screenWidth = 0.0;
 
+  _initializeSavedLocations(List<String> locations) async{
+
+    WeatherDatabase weatherDB = WeatherDatabase();
+
+    for(int i = 0; i< locations.length; i ++){
+      final weather = await weatherService.getWeather(cityName);
+      weatherDB.insertWeather(weather, WEATHER_TABLE);
+    }
+
+    weatherService.getWeatherDB();
+
+    final forecast = await forecastService.getForecast(cityName);
+  }
+
   _fetchWeather(String? cityName) async {
+    bool containsLocation =
+        await SharedPreferencesManager.containsLocation(cityName ?? "");
+    print("Contains location from  init" + containsLocation.toString());
+    print(cityName);
+
     setState(() {
       isDataFetched = false;
+      this.containsLocation = containsLocation;
     });
 
-    if(cityName == null ){
+    if (cityName == null) {
       cityName = await weatherService.getCurrentCity(); //if city is null
       setState(() {
         isCurrentLocation = true;
       });
-    } else{
+    } else {
+      if (!containsLocation) {
+        print(_animationController.value);
+
+        if (_animationController.value == _animationController.lowerBound) {
+          setState(() {
+            _rotateIcon();
+          });
+        }
+      } else {
+        if (_animationController.value == _animationController.upperBound) {
+          setState(() {
+            _rotateIcon();
+          });
+        }
+      }
+
       setState(() {
         isCurrentLocation = false;
       });
@@ -104,6 +144,9 @@ class _WeatherPageState extends State<WeatherPage> with SingleTickerProviderStat
     } else {
       _animationController.forward();
     }
+
+    //   _animationController.forward();
+    // _animationController.reverse();
   }
 
   //fetch weather
@@ -114,10 +157,12 @@ class _WeatherPageState extends State<WeatherPage> with SingleTickerProviderStat
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
+    print("Containg status when building: " + containsLocation.toString());
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: ShowDrawer().initDrawer(context, _fetchWeather),
+        drawer: ShowDrawer(_fetchWeather),
         body: Padding(
           padding: const EdgeInsets.only(top: 7),
           child: NestedScrollView(
@@ -134,58 +179,59 @@ class _WeatherPageState extends State<WeatherPage> with SingleTickerProviderStat
                         Builder(
                             builder: (context) => GestureDetector(
                                 onTap: () {
-                                  Scaffold.of(context).openDrawer();
+                                  Scaffold.of(context)
+                                      .openDrawer(); //wasnt being rebuilt before cus it was not a stl
                                 },
-                                child: Container(alignment: Alignment.centerLeft,
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
                                   child: const Icon(
                                     Icons.menu,
                                     size: 35,
                                     color: Colors.black,
                                   ),
                                 ))),
-                        Spacer(flex: 2,),
+                        Spacer(
+                          flex: 2,
+                        ),
                         Builder(
                             builder: (context) => GestureDetector(
                                 onTap: () async {
-                                  bool saveLocation = await SharedPreferencesManager.addToFavouritesList(_weather.cityName);
+                                  bool saveLocation =
+                                      await SharedPreferencesManager
+                                          .toggleFavouritesList(
+                                              _weather.cityName);
 
                                   //show this if scuccess
-                                  ToastNotification().showToast(context,_weather.cityName);
-                                  _rotateIcon();
+                                  // ToastNotification().showToast(context,_weather.cityName);
 
+                                  _rotateIcon();
+                                  // _animationController.forward();
                                 },
-                                child:isCurrentLocation ? const Icon(
-                                  CarbonIcons.location,
-                                  size: 35,
-                                  color: Colors.black,
-                                ) :
-                                AnimatedBuilder(
-                                  animation: _animation,
-                                  builder: (BuildContext context, Widget? child) {
-                                    return Transform.rotate(
-                                      angle: _animation.value * (3.141592653 / 2), // 90 degrees in radians
-                                      child:
-                                      const Icon(
-                                        CarbonIcons.add,
-                                        size: 40,
+                                child: isCurrentLocation
+                                    ? const Icon(
+                                        CarbonIcons.location,
+                                        size: 35,
                                         color: Colors.black,
-                                      ),
-                                    );
-                                  },
-                                ),)),
+                                      )
+                                    : AnimatedBuilder(
+                                        animation: _animation,
+                                        builder: (BuildContext context,
+                                            Widget? child) {
+                                          return Transform.rotate(
+                                            angle: _animation.value *
+                                                (3.141592653 / 2),
+                                            // 90 degrees in radians
+                                            child: const Icon(
+                                              CarbonIcons.close,
+                                              size: 40,
+                                              color: Colors.black,
+                                            ),
+                                          );
+                                        },
+                                      ))),
                       ],
                     ),
                   )
-                  // leading: Builder(
-                  //       builder: (context) => TextButton(
-                  //           onPressed: () {
-                  //             Scaffold.of(context).openDrawer();
-                  //           },
-                  //           child: const Icon(
-                  //             Icons.menu,
-                  //             size: 35,
-                  //             color: Colors.black,
-                  //           ))),
                   ),
             ],
             body: Container(
@@ -197,7 +243,7 @@ class _WeatherPageState extends State<WeatherPage> with SingleTickerProviderStat
                       height: screenHeight * 1.75,
                       // color: Colors.blue,
                       padding: EdgeInsets.only(bottom: 10),
-                      child: initWidget(context, screenHeight, screenWidth)),
+                      child: InitialWidgets(context, screenHeight, screenWidth, isDataFetched, isDataFetched ? _weather : FILLER_WEATHER, addWidgets)),
                 ),
               ),
             ),

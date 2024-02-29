@@ -152,15 +152,31 @@
 //   }
 // }
 
+import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:new_app/pages/WeatherPage.dart';
+import 'package:new_app/services/shared_preferences.dart';
 
 import '../model/SavedLocation.dart';
 
-class ShowDrawer {
-  Drawer initDrawer(BuildContext context, Function fetchWeatherForCity) {
+class ShowDrawer extends StatelessWidget{
+
+  final Function fetchWeatherForCity;
+
+  ShowDrawer(this.fetchWeatherForCity);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return initDrawer(context, fetchWeatherForCity);
+  }
+
+  Drawer initDrawer(BuildContext? context, Function? fetchWeatherForCity) {
     //passing function from Weather page to take new cityname as a input and call api accordingly to make state changes.
     TextEditingController controller = TextEditingController();
+
+    double screenHeight = MediaQuery.of(context!).size.height;
 
     return Drawer(
       elevation: 0,
@@ -190,7 +206,7 @@ class ShowDrawer {
               },
               onSelected: (String selection) {
                 FocusManager.instance.primaryFocus?.unfocus();
-                fetchWeatherForCity(selection);
+                fetchWeatherForCity!(selection);
                 Navigator.pop(context, true);
               },
               fieldViewBuilder: (BuildContext context,
@@ -262,41 +278,56 @@ class ShowDrawer {
             SizedBox(
               height: 20,
             ),
-            Padding(
+            Container(
+              height: screenHeight * 0.8,
               padding: EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Container(child: Lottie.asset("assets/mountains.json",height: 100),),
-                      Text(
-                        "Kathmandu",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      Text(
-                        "Cloudy",
-                        style: TextStyle(fontSize: 15),
-                      )
-                    ],
-                  ),
-                  Container(
-                    height: 50,
-                    alignment: Alignment.topRight,
-                    child: const Text(
-                      "19°",
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
-                    ),
-                  )
-                ],
-              ),
+              child: FutureBuilder<List<String>>(
+                future: SharedPreferencesManager.getFavouritesList(),
+                builder: (context,snapshot){
+                  print( snapshot.data?.length);
+                  return ListView.builder(
+                    // itemCount: 2,
+                    itemCount: snapshot.data?.length ?? 3,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Container(child: Lottie.asset("assets/mountains.json",height: 100),),
+                              Text(
+                                snapshot.data != null ? snapshot.data![index] : "OK",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                "Cloudy",
+                                style: TextStyle(fontSize: 15),
+                              )
+                            ],
+                          ),
+                          Container(
+                            height: 50,
+                            alignment: Alignment.topRight,
+                            child: const Text(
+                              "19°",
+                              style:
+                              TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+                            ),
+                          )
+                        ],
+                      );
+                    },
+                  );
+                },
+              )
+
             ),
           ],
         ),
       ),
     );
   }
+
 }

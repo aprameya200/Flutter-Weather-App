@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../model/WeatherModel.dart';
+
 void setSystemChrome(){
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Colors.white, // Change this color to the desired one
@@ -27,6 +29,12 @@ class ColorConstants{
 
 const String CURRENT_LOCATION = "current_location";
 const String FAVOURITES_LIST = "favourites_list";
+
+const String WEATHER_TABLE = "WEATHER";
+
+Weather FILLER_WEATHER =  Weather("OK", 12.2, "Cold", 12222);
+
+
 
 
 

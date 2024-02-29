@@ -18,7 +18,9 @@ samples, guidance on mobile development, and a full API reference.
 
 # TODO
 
+- fetch added location data in first call, 
+- dont allow repeating location in shared pref, 
+- add the data in db 
 - appbar color is slightly off
 - Add location to db and pull on first call
-- Show added locations in left
 - pull to refresh

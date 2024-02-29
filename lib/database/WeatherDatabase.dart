@@ -34,7 +34,8 @@ class WeatherDatabase {
         cityName TEXT,
         temperature DOUBLE,
         mainCondition TEXT,
-        time TEXT
+        time TEXT,
+        dateTime INTEGER
       )
     ''');
 
@@ -43,12 +44,18 @@ class WeatherDatabase {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cityName TEXT,
         temperature DOUBLE,
-        mainCondition TEXT
+        mainCondition TEXT,
+        dt INTEGER
       )
     ''');
   }
 
-  Future<int> insert(Forecast data, String tableName) async {
+  Future<int> insertForecast(Forecast data, String tableName) async {
+    Database db = await database;
+    return await db.insert(tableName, data.toMap());
+  }
+
+  Future<int> insertWeather(Weather data, String tableName) async {
     Database db = await database;
     return await db.insert(tableName, data.toMap());
   }

@@ -237,7 +237,7 @@ class SavedLocation {
     "Nashville",
     "Nassau",
     "New Delhi",
-    "New York City",
+    "New York",
     "Niamey",
     "Nicosia",
     "Nouakchott",
