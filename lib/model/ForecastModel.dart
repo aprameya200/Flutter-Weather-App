@@ -54,7 +54,7 @@ class Forecast {
   }
 
   static Forecast fromMap(Map<String, dynamic> map){
-    return Forecast(map['cityName'],map['temperature'],map['mainCondition'],map['time'],map['dateTime']);
+    return Forecast(map['cityName'],map['temperature'],map['mainCondition'],map['time'],map['dateTime'] ?? 0);
   }
 
 

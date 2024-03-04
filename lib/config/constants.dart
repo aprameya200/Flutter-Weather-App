@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../model/ForecastModel.dart';
 import '../model/WeatherModel.dart';
 
 void setSystemChrome(){
@@ -31,8 +32,10 @@ const String CURRENT_LOCATION = "current_location";
 const String FAVOURITES_LIST = "favourites_list";
 
 const String WEATHER_TABLE = "WEATHER";
+const String FORECAST_TABLE = "FORECAST";
 
 Weather FILLER_WEATHER =  Weather("OK", 12.2, "Cold", 12222);
+List<Forecast> FILLER_FORECAST =  [];
 
 
 

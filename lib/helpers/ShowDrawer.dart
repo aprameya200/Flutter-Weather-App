@@ -155,6 +155,7 @@
 import 'package:carbon_icons/carbon_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:new_app/database/WeatherDatabase.dart';
 import 'package:new_app/pages/WeatherPage.dart';
 import 'package:new_app/services/shared_preferences.dart';
 
@@ -163,16 +164,28 @@ import '../model/SavedLocation.dart';
 class ShowDrawer extends StatelessWidget{
 
   final Function fetchWeatherForCity;
+  final Function displayFromFav;
 
-  ShowDrawer(this.fetchWeatherForCity);
+  ShowDrawer(this.fetchWeatherForCity,this.displayFromFav);
+
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return initDrawer(context, fetchWeatherForCity);
+    return initDrawer(context, fetchWeatherForCity,displayFromFav);
   }
 
-  Drawer initDrawer(BuildContext? context, Function? fetchWeatherForCity) {
+  Future<Map> weatherData() async{
+    final sharePrefLocations = await SharedPreferencesManager.getFavouritesList();
+    final dbWeatherList = await WeatherDatabase().getWeather();
+
+    final data = {sharePrefLocations :dbWeatherList};
+
+    return data;
+  }
+
+
+  Drawer initDrawer(BuildContext? context, Function? fetchWeatherForCity, Function? displayFromFav) {
     //passing function from Weather page to take new cityname as a input and call api accordingly to make state changes.
     TextEditingController controller = TextEditingController();
 
@@ -280,7 +293,7 @@ class ShowDrawer extends StatelessWidget{
             ),
             Container(
               height: screenHeight * 0.8,
-              padding: EdgeInsets.all(8.0),
+              padding: EdgeInsets.all(0),
               child: FutureBuilder<List<String>>(
                 future: SharedPreferencesManager.getFavouritesList(),
                 builder: (context,snapshot){
@@ -289,34 +302,28 @@ class ShowDrawer extends StatelessWidget{
                     // itemCount: 2,
                     itemCount: snapshot.data?.length ?? 3,
                     itemBuilder: (BuildContext context, int index) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                           Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Container(child: Lottie.asset("assets/mountains.json",height: 100),),
-                              Text(
+                      return InkWell(
+                        onTap: () {
+                          // fetchWeatherForCity!(snapshot.data != null ? snapshot.data![index] : "OK");
+                          displayFromFav!(snapshot.data![index]);
+                          Navigator.pop(context, true);
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 3.0),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 2,horizontal: 10),
+                            height: 45,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14.2)),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
                                 snapshot.data != null ? snapshot.data![index] : "OK",
-                                style: TextStyle(fontSize: 20),
+                                style: TextStyle(fontSize: 25),
                               ),
-                              Text(
-                                "Cloudy",
-                                style: TextStyle(fontSize: 15),
-                              )
-                            ],
-                          ),
-                          Container(
-                            height: 50,
-                            alignment: Alignment.topRight,
-                            child: const Text(
-                              "19°",
-                              style:
-                              TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
                             ),
-                          )
-                        ],
+                          ),
+                        ),
                       );
                     },
                   );
@@ -329,5 +336,6 @@ class ShowDrawer extends StatelessWidget{
       ),
     );
   }
+
 
 }

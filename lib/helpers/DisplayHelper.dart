@@ -117,9 +117,9 @@ double getFontSize(double screenHeight, String fontSize) {
     case FONT_FORECAST_DATE:
       return screenHeight * 0.018;
     case FONT_FORECAST_TIME:
-      return screenHeight * 0.044;
+      return screenHeight * 0.024;
     case FONT_FORECAST_TEMPERATURE:
-      return screenHeight * 0.07;
+      return screenHeight * 0.04;
   }
   double newSize = 20;
   return newSize;

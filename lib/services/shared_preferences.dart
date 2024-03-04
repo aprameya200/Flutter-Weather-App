@@ -18,7 +18,6 @@ class SharedPreferencesManager {
   }
 
   static Future<bool> toggleFavouritesList(String location) async {
-    // print("Hi");
     SharedPreferences pref = await SharedPreferences.getInstance();
     // clearFavouriteList();
 
@@ -39,7 +38,7 @@ class SharedPreferencesManager {
   }
 
   static Future<bool> containsLocation(String location) async {
-    print(location + " is tyhe location");
+
     SharedPreferences pref = await SharedPreferences.getInstance();
     final list = pref.getStringList(FAVOURITES_LIST) ?? [];
 

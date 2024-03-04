@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:lottie/lottie.dart';
+import 'package:new_app/model/ForecastModel.dart';
 import 'package:new_app/model/WeatherModel.dart';
+import 'package:new_app/widgets/add_widgets.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 import '../config/constants.dart';
@@ -17,17 +19,17 @@ class InitialWidgets extends StatelessWidget{
   final double screenWidth;
   final bool isDataFetched;
   final Weather _weather;
-  final Function addWidgets;
+  final List _forecast;
 
-  InitialWidgets(this.buildContext, this.screenHeight, this.screenWidth, this.isDataFetched, this._weather, this.addWidgets);
+  InitialWidgets(this.buildContext, this.screenHeight, this.screenWidth, this.isDataFetched, this._weather, this._forecast);
 
   @override
   Widget build(BuildContext context) {
-    return initWidget(context, screenHeight, screenWidth, isDataFetched, _weather, addWidgets);
+    return initWidget(context, screenHeight, screenWidth, isDataFetched, _weather,_forecast);
   }
 
   Widget initWidget(
-      BuildContext context, double screenHeight, double screenWidth, bool isDataFetched, Weather? _weather, Function addWidgets) {
+      BuildContext context, double screenHeight, double screenWidth, bool isDataFetched, Weather? _weather, List _forecast) {
     List<Widget> displayWidgets = [
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -104,17 +106,15 @@ class InitialWidgets extends StatelessWidget{
 
     // adding the forecast in this list
     // Today
-    mainbodyWidgets.add(addWidgets(context, DateTime.now().toString()));
+    mainbodyWidgets.add(AddWidgets().addWidgets(context, DateTime.now().toString(), isDataFetched,_forecast,screenHeight,screenWidth));
     mainbodyWidgets.add(SizedBox(height: 30));
 
     //Tommorow
-    mainbodyWidgets.add(
-        addWidgets(context, DateTime.now().add(Duration(days: 1)).toString()));
+    mainbodyWidgets.add( AddWidgets().addWidgets(context,DateTime.now().add(Duration(days: 1)).toString(), isDataFetched,_forecast,screenHeight,screenWidth));
     mainbodyWidgets.add(SizedBox(height: 30));
 
     //Day after
-    mainbodyWidgets.add(
-        addWidgets(context, DateTime.now().add(Duration(days: 2)).toString()));
+    mainbodyWidgets.add( AddWidgets().addWidgets(context,DateTime.now().add(Duration(days: 2)).toString(), isDataFetched,_forecast,screenHeight,screenWidth));
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,

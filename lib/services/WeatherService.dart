@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:geocoding/geocoding.dart';
 import 'package:new_app/database/WeatherDatabase.dart';
 
+import '../model/ForecastModel.dart';
 import '../model/WeatherModel.dart';
 
 import 'package:http/http.dart'
@@ -26,9 +27,7 @@ class WeatherService {
     // try {
       final response = await http.get(Uri.parse(
           '$BASE_URL?q=$cityName&units=metric&appid=$API_KEY_1'));
-      print(cityName);
-      print(response.statusCode);
-      print(response.body);
+
 
       if (response.statusCode == 200) {
         // saveToDatabase(Weather.fromJSON(
@@ -60,11 +59,19 @@ class WeatherService {
     await db.insert('weather', weather.toMap());
   }
 
-  void getWeatherDB() async {
+  Future<List<Weather>> getWeatherDB() async {
     final List<Weather> weathers = await dbHelper.getWeather();
     for (final weather in weathers) {
-      print('CityName: ${weather.cityName}, Age: ${weather.temperature}');
+      print('CityName: ${weather.cityName}, Temp: ${weather.temperature}');
     }
+
+    return weathers;
+  }
+
+  Future<List<Forecast>> getForecastDB() async{
+    final List<Forecast> forecast = await dbHelper.getForecast();
+    return forecast;
+
   }
 
   Future<String> getCurrentCity() async {

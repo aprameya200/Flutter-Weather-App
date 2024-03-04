@@ -15,9 +15,11 @@ import 'package:new_app/helpers/ShowDrawer.dart';
 import 'package:new_app/model/ForecastModel.dart';
 import 'package:new_app/model/SavedLocation.dart';
 import 'package:new_app/model/WeatherModel.dart';
+import 'package:new_app/model/favourite.dart';
 import 'package:new_app/services/ForecastService.dart';
 import 'package:new_app/services/WeatherService.dart';
 import 'package:new_app/services/shared_preferences.dart';
+import 'package:new_app/widgets/add_widgets.dart';
 import 'package:new_app/widgets/initial_widget.dart';
 import 'package:skeleton_animation/skeleton_animation.dart';
 import 'package:toastification/toastification.dart';
@@ -49,27 +51,36 @@ class _WeatherPageState extends State<WeatherPage>
   late Weather _weather;
   late List _forecast;
   late String cityName;
+  Map<Weather,List<Forecast>> favourites = {};
 
   double screenHeight = 0.0;
   double screenWidth = 0.0;
 
-  _initializeSavedLocations(List<String> locations) async{
+  _initializeSavedLocations() async{
 
     WeatherDatabase weatherDB = WeatherDatabase();
+    final list = await SharedPreferencesManager.getFavouritesList();
 
-    for(int i = 0; i< locations.length; i ++){
-      final weather = await weatherService.getWeather(cityName);
-      weatherDB.insertWeather(weather, WEATHER_TABLE);
+    for(int i = 0; i< list.length; i ++){
+      final weather = await weatherService.getWeather(list[i]);
+      final forecast = await forecastService.getForecast(list[i]);
+
+      print(await weatherDB.updateWeather(weather, WEATHER_TABLE));
+      print("Success status for " + weather.cityName);
+      weatherDB.updateForecast(forecast, FORECAST_TABLE);
+
+      // setState(() {
+      //   favourites.add({weather : _forecast});
+      // });
     }
 
     weatherService.getWeatherDB();
-
-    final forecast = await forecastService.getForecast(cityName);
+    // final forecast = await forecastService.getForecast(cityName);
   }
 
   _fetchWeather(String? cityName) async {
     bool containsLocation =
-        await SharedPreferencesManager.containsLocation(cityName ?? "");
+    await SharedPreferencesManager.containsLocation(cityName ?? "");
     print("Contains location from  init" + containsLocation.toString());
     print(cityName);
 
@@ -121,11 +132,45 @@ class _WeatherPageState extends State<WeatherPage>
     });
   }
 
+  _displayFromFav(String weather) {
+
+    List<Weather> keys = favourites.keys.toList();
+    List<List<Forecast>> vals = favourites.values.toList();
+
+    for(int i = 0; i < favourites.keys.length;i++){
+
+      if(keys[i].cityName == weather){
+        setState(() {
+          _weather = keys[i];
+          _forecast = vals[i];
+        });
+        break;
+      }
+    }
+
+
+  }
+
+  setFavouritesData() async{
+    WeatherDatabase weatherDB = WeatherDatabase();
+
+    var weather = await weatherDB.getWeather();
+
+    for(int i = 0; i < weather.length;i++){
+      var forecast = await weatherDB.getDataByName(weather[i].cityName);
+      favourites[weather[i]] = forecast;
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _fetchWeather(null);
+    _initializeSavedLocations();
+    setFavouritesData();
+
+    final list = SharedPreferencesManager.getFavouritesList();
 
     _animationController = AnimationController(
       vsync: this,
@@ -162,7 +207,7 @@ class _WeatherPageState extends State<WeatherPage>
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: ShowDrawer(_fetchWeather),
+        drawer: ShowDrawer(_fetchWeather,_displayFromFav),
         body: Padding(
           padding: const EdgeInsets.only(top: 7),
           child: NestedScrollView(
@@ -197,9 +242,14 @@ class _WeatherPageState extends State<WeatherPage>
                             builder: (context) => GestureDetector(
                                 onTap: () async {
                                   bool saveLocation =
-                                      await SharedPreferencesManager
-                                          .toggleFavouritesList(
-                                              _weather.cityName);
+                                  await SharedPreferencesManager
+                                      .toggleFavouritesList(
+                                      _weather.cityName);
+
+                                  WeatherDatabase weatherDB = WeatherDatabase();
+                                  weatherDB.toggleLocation(_weather, _forecast);
+
+
 
                                   //show this if scuccess
                                   // ToastNotification().showToast(context,_weather.cityName);
@@ -209,30 +259,30 @@ class _WeatherPageState extends State<WeatherPage>
                                 },
                                 child: isCurrentLocation
                                     ? const Icon(
-                                        CarbonIcons.location,
-                                        size: 35,
-                                        color: Colors.black,
-                                      )
+                                  CarbonIcons.location,
+                                  size: 35,
+                                  color: Colors.black,
+                                )
                                     : AnimatedBuilder(
-                                        animation: _animation,
-                                        builder: (BuildContext context,
-                                            Widget? child) {
-                                          return Transform.rotate(
-                                            angle: _animation.value *
-                                                (3.141592653 / 2),
-                                            // 90 degrees in radians
-                                            child: const Icon(
-                                              CarbonIcons.close,
-                                              size: 40,
-                                              color: Colors.black,
-                                            ),
-                                          );
-                                        },
-                                      ))),
+                                  animation: _animation,
+                                  builder: (BuildContext context,
+                                      Widget? child) {
+                                    return Transform.rotate(
+                                      angle: _animation.value *
+                                          (3.141592653 / 2),
+                                      // 90 degrees in radians
+                                      child: const Icon(
+                                        CarbonIcons.close,
+                                        size: 40,
+                                        color: Colors.black,
+                                      ),
+                                    );
+                                  },
+                                ))),
                       ],
                     ),
                   )
-                  ),
+              ),
             ],
             body: Container(
               color: Colors.transparent,
@@ -243,7 +293,7 @@ class _WeatherPageState extends State<WeatherPage>
                       height: screenHeight * 1.75,
                       // color: Colors.blue,
                       padding: EdgeInsets.only(bottom: 10),
-                      child: InitialWidgets(context, screenHeight, screenWidth, isDataFetched, isDataFetched ? _weather : FILLER_WEATHER, addWidgets)),
+                      child: InitialWidgets(context, screenHeight, screenWidth, isDataFetched, isDataFetched ? _weather : FILLER_WEATHER, isDataFetched ? _forecast : FILLER_FORECAST)),
                 ),
               ),
             ),
@@ -260,93 +310,93 @@ class _WeatherPageState extends State<WeatherPage>
 
     return !isDataFetched
         ? Container(
-            margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-            child: Skeleton(
-                textColor: const Color.fromARGB(50, 50, 50, 50),
-                height: containerHeight,
-                width: screenWidth,
-                borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                style: SkeletonStyle.text))
-        : Container(
-            margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+        margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+        child: Skeleton(
+            textColor: const Color.fromARGB(50, 50, 50, 50),
             height: containerHeight,
             width: screenWidth,
-            decoration: BoxDecoration(
-              // color: Colors.green,
-              color: const Color.fromARGB(12, 12, 12, 12),
-              borderRadius: BorderRadius.circular(screenWidth * 0.05),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      Converters.displayForecastDate(date),
-                      style: TextStyle(
-                        fontSize: getFontSize(screenHeight, FONT_FORECAST_DATE),
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(176, 0, 0, 0),
-                      ),
-                    ),
-                  ),
+            borderRadius: BorderRadius.circular(screenWidth * 0.05),
+            style: SkeletonStyle.text))
+        : Container(
+      margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+      height: containerHeight,
+      width: screenWidth,
+      decoration: BoxDecoration(
+        // color: Colors.green,
+        color: const Color.fromARGB(12, 12, 12, 12),
+        borderRadius: BorderRadius.circular(screenWidth * 0.05),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                Converters.displayForecastDate(date),
+                style: TextStyle(
+                  fontSize: getFontSize(screenHeight, FONT_FORECAST_DATE),
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.w500,
+                  color: Color.fromARGB(176, 0, 0, 0),
                 ),
-                Container(
-                  height: containerHeight * 0.75, // Adjust as needed
-                  child: ListView(
-                    // physics: PageScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    children: getForecast(date, screenWidth, screenHeight),
-                  ),
-                ),
-              ],
+              ),
             ),
-          );
+          ),
+          Container(
+            height: containerHeight * 0.75, // Adjust as needed
+            child: ListView(
+              // physics: PageScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              children: getForecast(date, screenWidth, screenHeight),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   List<Widget> getForecast(
       String date, double screenHeight, double screenWidth) {
     return _forecast
         .where((forecast) => //single element in the forecast list
-            Converters.dateFormatter(forecast.time) ==
-            Converters.dateFormatter(date))
+    Converters.dateFormatter(forecast.time) ==
+        Converters.dateFormatter(date))
         .map((forecast) => Container(
-              //maps each elemt of the forecast list as a Container
-              padding: const EdgeInsets.all(7),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    Converters.convertTime(forecast.time),
-                    // forecast.time.toString(),
-                    style: TextStyle(
-                        fontSize: getFontSize(screenHeight, FONT_FORECAST_TIME),
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(176, 0, 0, 0)),
-                  ),
-                  Lottie.asset(
-                      DisplayHelper.getDisplayAnimation(
-                          forecast.mainCondition, 0, forecast.time),
-                      width: screenWidth * 0.113,
-                      height: screenHeight * 0.25),
-                  Text(
-                    "  ${forecast.temperature.round()} °",
-                    style: TextStyle(
-                        fontSize: getFontSize(
-                            screenHeight, FONT_FORECAST_TEMPERATURE),
-                        fontWeight: FontWeight.w400),
-                  ),
-                ],
-              ),
-            ))
+      //maps each elemt of the forecast list as a Container
+      padding: const EdgeInsets.all(7),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text(
+            Converters.convertTime(forecast.time),
+            // forecast.time.toString(),
+            style: TextStyle(
+                fontSize: getFontSize(screenHeight, FONT_FORECAST_TIME),
+                letterSpacing: 1,
+                fontWeight: FontWeight.w500,
+                color: Color.fromARGB(176, 0, 0, 0)),
+          ),
+          Lottie.asset(
+              DisplayHelper.getDisplayAnimation(
+                  forecast.mainCondition, 0, forecast.time),
+              width: screenWidth * 0.113,
+              height: screenHeight * 0.25),
+          Text(
+            "  ${forecast.temperature.round()} °",
+            style: TextStyle(
+                fontSize: getFontSize(
+                    screenHeight, FONT_FORECAST_TEMPERATURE),
+                fontWeight: FontWeight.w400),
+          ),
+        ],
+      ),
+    ))
         .expand((widget) => [
-              widget,
-              const VerticalDivider()
-            ]) //adds new widget after each element widget
+      widget,
+      const VerticalDivider()
+    ]) //adds new widget after each element widget
         .toList() //convert to list
       ..removeLast(); // Remove the last VerticalDivider(.. means additional operation)
   }
