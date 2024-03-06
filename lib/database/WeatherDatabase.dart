@@ -46,7 +46,7 @@ class WeatherDatabase {
         cityName TEXT,
         temperature DOUBLE,
         mainCondition TEXT,
-        dt INTEGER
+        dt INTEGER,
       )
     ''');
   }

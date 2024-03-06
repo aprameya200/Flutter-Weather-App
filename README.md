@@ -18,9 +18,14 @@ samples, guidance on mobile development, and a full API reference.
 
 # TODO
 
+
+V1
+- pull to refresh
+
+V2
 - fetch added location data in first call, 
 - add the data in db 
 - appbar color is slightly off
 - Add location to db and pull on first call
-- pull to refresh
+
 

@@ -56,26 +56,8 @@ class _WeatherPageState extends State<WeatherPage>
   double screenHeight = 0.0;
   double screenWidth = 0.0;
 
-  _initializeSavedLocations() async{
-
-    WeatherDatabase weatherDB = WeatherDatabase();
-    final list = await SharedPreferencesManager.getFavouritesList();
-
-    for(int i = 0; i< list.length; i ++){
-      final weather = await weatherService.getWeather(list[i]);
-      final forecast = await forecastService.getForecast(list[i]);
-
-      print(await weatherDB.updateWeather(weather, WEATHER_TABLE));
-      print("Success status for " + weather.cityName);
-      weatherDB.updateForecast(forecast, FORECAST_TABLE);
-
-      // setState(() {
-      //   favourites.add({weather : _forecast});
-      // });
-    }
-
-    weatherService.getWeatherDB();
-    // final forecast = await forecastService.getForecast(cityName);
+  _addCurrentLocationToSharedPrefs(String currentLocation) async{
+    await SharedPreferencesManager.setCurrentLocation(currentLocation);
   }
 
   _fetchWeather(String? cityName) async {
@@ -84,6 +66,7 @@ class _WeatherPageState extends State<WeatherPage>
     print("Contains location from  init" + containsLocation.toString());
     print(cityName);
 
+
     setState(() {
       isDataFetched = false;
       this.containsLocation = containsLocation;
@@ -91,6 +74,7 @@ class _WeatherPageState extends State<WeatherPage>
 
     if (cityName == null) {
       cityName = await weatherService.getCurrentCity(); //if city is null
+      _addCurrentLocationToSharedPrefs(cityName);
       setState(() {
         isCurrentLocation = true;
       });
@@ -132,43 +116,14 @@ class _WeatherPageState extends State<WeatherPage>
     });
   }
 
-  _displayFromFav(String weather) {
-
-    List<Weather> keys = favourites.keys.toList();
-    List<List<Forecast>> vals = favourites.values.toList();
-
-    for(int i = 0; i < favourites.keys.length;i++){
-
-      if(keys[i].cityName == weather){
-        setState(() {
-          _weather = keys[i];
-          _forecast = vals[i];
-        });
-        break;
-      }
-    }
-
-
-  }
-
-  setFavouritesData() async{
-    WeatherDatabase weatherDB = WeatherDatabase();
-
-    var weather = await weatherDB.getWeather();
-
-    for(int i = 0; i < weather.length;i++){
-      var forecast = await weatherDB.getDataByName(weather[i].cityName);
-      favourites[weather[i]] = forecast;
-    }
-  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _fetchWeather(null);
-    _initializeSavedLocations();
-    setFavouritesData();
+    // _initializeSavedLocations();
+    // setFavouritesData();
 
     final list = SharedPreferencesManager.getFavouritesList();
 
@@ -207,7 +162,7 @@ class _WeatherPageState extends State<WeatherPage>
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        drawer: ShowDrawer(_fetchWeather,_displayFromFav),
+        drawer: ShowDrawer(_fetchWeather),
         body: Padding(
           padding: const EdgeInsets.only(top: 7),
           child: NestedScrollView(

@@ -4,7 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPreferencesManager {
   static Future<void> setCurrentLocation(String location) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(CURRENT_LOCATION, location);
+
+    final locationList = prefs.getStringList(FAVOURITES_LIST) ?? [];
+    
+    locationList.insert(0,location);
+
+    await prefs.setStringList(FAVOURITES_LIST, locationList);
+
   }
 
   static Future<String> getCurrentLocation() async {

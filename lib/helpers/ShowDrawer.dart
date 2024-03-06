@@ -164,15 +164,14 @@ import '../model/SavedLocation.dart';
 class ShowDrawer extends StatelessWidget{
 
   final Function fetchWeatherForCity;
-  final Function displayFromFav;
 
-  ShowDrawer(this.fetchWeatherForCity,this.displayFromFav);
+  ShowDrawer(this.fetchWeatherForCity);
 
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return initDrawer(context, fetchWeatherForCity,displayFromFav);
+    return initDrawer(context, fetchWeatherForCity);
   }
 
   Future<Map> weatherData() async{
@@ -185,7 +184,7 @@ class ShowDrawer extends StatelessWidget{
   }
 
 
-  Drawer initDrawer(BuildContext? context, Function? fetchWeatherForCity, Function? displayFromFav) {
+  Drawer initDrawer(BuildContext? context, Function? fetchWeatherForCity) {
     //passing function from Weather page to take new cityname as a input and call api accordingly to make state changes.
     TextEditingController controller = TextEditingController();
 
@@ -305,7 +304,8 @@ class ShowDrawer extends StatelessWidget{
                       return InkWell(
                         onTap: () {
                           // fetchWeatherForCity!(snapshot.data != null ? snapshot.data![index] : "OK");
-                          displayFromFav!(snapshot.data![index]);
+                          fetchWeatherForCity!(snapshot.data![index]);
+
                           Navigator.pop(context, true);
                         },
                         child: Padding(
